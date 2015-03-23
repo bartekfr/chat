@@ -15,15 +15,20 @@
 		<div id="dialog"></div>	
 	</section>
 
-	<script src="http://localhost:3000/socket.io/socket.io.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
 	<script>
 		var dialog = document.getElementById('dialog');
 		var lastMessageElement = null;
 		var input = document.getElementById('input');
 
-		var socket = io.connect('http://localhost:3000');
+		var socket = io();
 		socket.on('serverMessage', function(content) {
 			addMessage(content);
+		});
+
+		socket.on('login', function() {
+			var username = prompt('What username would you like to use?');
+			socket.emit('login', username);
 		});
 
 		input.onkeydown = function(e) {
