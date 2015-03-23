@@ -13,6 +13,7 @@
 		Type your message:
 		<input type="text" id="input">
 		<div id="dialog"></div>	
+		<div id="info"></div>
 	</section>
 
 	<script src="/socket.io/socket.io.js"></script>
@@ -20,15 +21,28 @@
 		var dialog = document.getElementById('dialog');
 		var lastMessageElement = null;
 		var input = document.getElementById('input');
+		var infoElement = document.getElementById('info');
 
 		var socket = io();
 		socket.on('serverMessage', function(content) {
 			addMessage(content);
 		});
 
-		socket.on('login', function() {
-			var username = prompt('What username would you like to use?');
-			socket.emit('login', username);
+		//set username
+		var username = prompt('What username would you like to use?');
+		socket.emit('login', username);
+
+		socket.on('logged', function(data) {
+			console.log("user logged in");
+			infoElement.innerHTML = "Currently " + data.usersCount + " is logged in";
+		});
+		socket.on('userJoined', function(data) {
+			console.log("user joined");
+			infoElement.innerHTML = "Currently " + data.usersCount + " is logged in";
+		});
+		socket.on('userLeft', function(data) {
+			console.log("user left");
+			infoElement.innerHTML = "Currently " + data.usersCount + " is logged in";
 		});
 
 		input.onkeydown = function(e) {

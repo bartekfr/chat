@@ -17,16 +17,45 @@ function callback(req, res) {
 	);
 }
 
+var users = {};
+var usersCount = 0;
+
 websocket.sockets.on('connection', function (socket) {
 	socket.on('clientMessage', function(content) {
 		socket.emit('serverMessage', 'You said: ' + content);
-		socket.broadcast.emit('serverMessage', socket.id + ' said: ' + content);
+		socket.broadcast.emit('serverMessage', socket.username + ' said: ' + content);
 	});
 
 	socket.on('login', function(username) {
 		socket.username = username;
-		socket.emit('serverMessage', 'Currently logged in as ' + username);
-		socket.broadcast.emit('serverMessage', 'User ' + username + ' logged in');
+		users[username] = true;
+		usersCount++;
+		socket.emit('serverMessage', 'Logged in as ' + socket.username);
+		socket.broadcast.emit('serverMessage', 'User ' + socket.username + ' logged in');
+
+		socket.broadcast.emit('userJoined', {
+			usersCount: usersCount,
+			username: username
+		});
+
+		socket.emit('logged', {
+			usersCount: usersCount
+		});
 	});
-	socket.emit('login');
+
+	socket.on('disconnect', function () {
+		// remove the username from global usernames list
+		if(typeof socket.username !== "undefined") {
+			delete users[socket.username];
+			usersCount--;
+			// echo globally that this client has left
+			socket.broadcast.emit('userLeft', {
+				username: socket.username,
+				usersCount: usersCount
+			});
+			socket.broadcast.emit('serverMessage', 'User ' + socket.username + ' left chat');
+		}
+
+	});
+
 });
