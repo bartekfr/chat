@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]><html class="no-js ie6 ie6-8 ie6-7" lang="en"><![endif]-->
+<!--[if IE 7]><html class="no-js ie7 ie6-8 ie6-7" lang="en"><![endif]-->
+<!--[if IE 8]><html class="no-js ie8 ie6-8" lang="en"><![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--><html class="no-js" lang="en" ><!--<![endif]-->
+<head>
+	<meta charset="utf-8" />
+	<title>Websocket chat</title>
+</head>
+<body>
+	<section>
+		<h1>Chat</h1>
+		Type your message:
+		<input type="text" id="input">
+		<div id="dialog"></div>	
+	</section>
+
+	<script src="http://localhost:3000/socket.io/socket.io.js"></script>
+	<script>
+		var dialog = document.getElementById('dialog');
+		var lastMessageElement = null;
+		var input = document.getElementById('input');
+
+		var socket = io.connect('http://localhost:3000');
+		socket.on('serverMessage', function(content) {
+			addMessage(content);
+		});
+
+		input.onkeydown = function(e) {
+			if (e.keyCode === 13) {
+				socket.emit('clientMessage', this.value);
+				this.value = '';
+				return false;
+			} else {
+				return true;
+			}
+		};
+
+		function addMessage(message) {
+			var newMessageElement = document.createElement('div');
+			var newMessageText = document.createTextNode(message);
+
+			newMessageElement.appendChild(newMessageText);
+			dialog.insertBefore(newMessageElement, lastMessageElement);
+			lastMessageElement = newMessageElement;
+		}
+	</script>
+
+</body>
+</html>
