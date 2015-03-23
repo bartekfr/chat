@@ -6,14 +6,29 @@
 <head>
 	<meta charset="utf-8" />
 	<title>Websocket chat</title>
+	<style type="text/css">
+	.box {
+		padding: 10px;
+	}
+
+	#dialog {
+		border: 1px solid #000;
+	}
+
+	.strong {
+		font-weight: bold;
+	}
+	</style>
 </head>
 <body>
 	<section>
 		<h1>Chat</h1>
-		Type your message:
-		<input type="text" id="input">
-		<div id="dialog"></div>	
-		<div id="info"></div>
+		<form>
+			Type your message:
+			<input type="text" id="input" placeholder="Type your message">
+		</form>
+		<div class="box" id="dialog"></div>	
+		<div class="box" id="info"></div>
 	</section>
 
 	<script src="/socket.io/socket.io.js"></script>
@@ -34,15 +49,15 @@
 
 		socket.on('logged', function(data) {
 			console.log("user logged in");
-			infoElement.innerHTML = "Currently " + data.usersCount + " is logged in";
+			usersInfoUpdate(data)
 		});
 		socket.on('userJoined', function(data) {
 			console.log("user joined");
-			infoElement.innerHTML = "Currently " + data.usersCount + " is logged in";
+			usersInfoUpdate(data)
 		});
 		socket.on('userLeft', function(data) {
 			console.log("user left");
-			infoElement.innerHTML = "Currently " + data.usersCount + " is logged in";
+			usersInfoUpdate(data)
 		});
 
 		input.onkeydown = function(e) {
@@ -62,6 +77,10 @@
 			newMessageElement.appendChild(newMessageText);
 			dialog.insertBefore(newMessageElement, lastMessageElement);
 			lastMessageElement = newMessageElement;
+		}
+
+		function usersInfoUpdate(data) {
+			infoElement.innerHTML = "Currently " + data.usersCount + " users is logged in";
 		}
 	</script>
 
