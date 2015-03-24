@@ -12,6 +12,7 @@
 	}
 
 	#dialog {
+		margin-top: 15px;
 		border: 1px solid #000;
 	}
 
@@ -39,8 +40,8 @@
 		var infoElement = document.getElementById('info');
 
 		var socket = io();
-		socket.on('serverMessage', function(content) {
-			addMessage(content);
+		socket.on('serverMessage', function(data) {
+			addMessage(data.msg, data.system);
 		});
 
 		//set username
@@ -70,10 +71,12 @@
 			}
 		};
 
-		function addMessage(message) {
+		function addMessage(message, system) {
 			var newMessageElement = document.createElement('div');
 			var newMessageText = document.createTextNode(message);
-
+			if(system) {
+				newMessageElement.classList.add("strong");
+			}
 			newMessageElement.appendChild(newMessageText);
 			dialog.insertBefore(newMessageElement, lastMessageElement);
 			lastMessageElement = newMessageElement;

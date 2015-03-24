@@ -22,16 +22,26 @@ var usersCount = 0;
 
 websocket.sockets.on('connection', function (socket) {
 	socket.on('clientMessage', function(content) {
-		socket.emit('serverMessage', 'You said: ' + content);
-		socket.broadcast.emit('serverMessage', socket.username + ' said: ' + content);
+		socket.emit('serverMessage', {
+			msg: 'You said: ' + content
+		});
+		socket.broadcast.emit('serverMessage', {
+			msg: socket.username + ' said: ' + content
+		});
 	});
 
 	socket.on('login', function(username) {
 		socket.username = username;
 		users[username] = true;
 		usersCount++;
-		socket.emit('serverMessage', 'Logged in as ' + socket.username);
-		socket.broadcast.emit('serverMessage', 'User ' + socket.username + ' logged in');
+		socket.emit('serverMessage', {
+			msg: 'Logged in as ' + socket.username,
+			system: true
+		});
+		socket.broadcast.emit('serverMessage', {
+			msg: 'User ' + socket.username + ' logged in',
+			system: true
+		});
 
 		socket.broadcast.emit('userJoined', {
 			usersCount: usersCount,
@@ -45,7 +55,7 @@ websocket.sockets.on('connection', function (socket) {
 
 	socket.on('disconnect', function () {
 		// remove the username from global usernames list
-		if(typeof socket.username !== "undefined") {
+		if(typeof socket.username !== 'undefined') {
 			delete users[socket.username];
 			usersCount--;
 			// echo globally that this client has left
@@ -53,7 +63,9 @@ websocket.sockets.on('connection', function (socket) {
 				username: socket.username,
 				usersCount: usersCount
 			});
-			socket.broadcast.emit('serverMessage', 'User ' + socket.username + ' left chat');
+			socket.broadcast.emit('serverMessage', {
+				msg: 'User ' + socket.username + ' left chat'
+			});
 		}
 
 	});
