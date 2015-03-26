@@ -7,18 +7,18 @@
 	<meta charset="utf-8" />
 	<title>Websocket chat</title>
 	<style type="text/css">
-	.box {
-		padding: 10px;
-	}
+		.box {
+			padding: 10px;
+		}
 
-	#dialog {
-		margin-top: 15px;
-		border: 1px solid #000;
-	}
+		#dialog {
+			margin-top: 15px;
+			border: 1px solid #000;
+		}
 
-	.strong {
-		font-weight: bold;
-	}
+		.strong {
+			font-weight: bold;
+		}
 	</style>
 </head>
 <body>
@@ -33,59 +33,7 @@
 	</section>
 
 	<script src="/socket.io/socket.io.js"></script>
-	<script>
-		var dialog = document.getElementById('dialog');
-		var lastMessageElement = null;
-		var input = document.getElementById('input');
-		var infoElement = document.getElementById('info');
-
-		var socket = io();
-		socket.on('serverMessage', function(data) {
-			addMessage(data.msg, data.system);
-		});
-
-		//set username
-		var username = prompt('What username would you like to use?');
-		socket.emit('login', username);
-
-		socket.on('logged', function(data) {
-			console.log("user logged in");
-			usersInfoUpdate(data)
-		});
-		socket.on('userJoined', function(data) {
-			console.log("user joined");
-			usersInfoUpdate(data)
-		});
-		socket.on('userLeft', function(data) {
-			console.log("user left");
-			usersInfoUpdate(data)
-		});
-
-		input.onkeydown = function(e) {
-			if (e.keyCode === 13) {
-				socket.emit('clientMessage', this.value);
-				this.value = '';
-				return false;
-			} else {
-				return true;
-			}
-		};
-
-		function addMessage(message, system) {
-			var newMessageElement = document.createElement('div');
-			var newMessageText = document.createTextNode(message);
-			if(system) {
-				newMessageElement.classList.add("strong");
-			}
-			newMessageElement.appendChild(newMessageText);
-			dialog.insertBefore(newMessageElement, lastMessageElement);
-			lastMessageElement = newMessageElement;
-		}
-
-		function usersInfoUpdate(data) {
-			infoElement.innerHTML = "Currently " + data.usersCount + " users is logged in";
-		}
-	</script>
+	<script src="/main.js"></script>
 
 </body>
 </html>

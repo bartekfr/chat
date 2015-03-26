@@ -1,21 +1,15 @@
-var http = require('http');
-var fs = require('fs');
-var server = http.createServer(callback).listen(3000);
+var express = require('express');
+var app =express();
+var server = app.listen(3000);
 var websocket = require('socket.io').listen(server);
 
-function callback(req, res) {
-	fs.readFile(__dirname + '/index.html',
-		function(error, data) {
-			if (error) {
-			 res.writeHead(500);
-			 return res.end('Error loading index.html');
-			}
 
-			res.writeHead(200);
-			res.end(data);
-		}
-	);
-}
+app.get('/', function(req, res){
+  res.sendFile(__dirname + '/index.html');
+});
+app.use(express.static('public'));
+
+
 
 var users = {};
 var usersCount = 0;
@@ -64,7 +58,8 @@ websocket.sockets.on('connection', function (socket) {
 				usersCount: usersCount
 			});
 			socket.broadcast.emit('serverMessage', {
-				msg: 'User ' + socket.username + ' left chat'
+				msg: 'User ' + socket.username + ' left chat',
+				system: true
 			});
 		}
 
