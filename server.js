@@ -1,15 +1,7 @@
-var express = require('express');
-var app =express();
+var express = require('./config/express');
+var app = express();
 var server = app.listen(3000);
 var websocket = require('socket.io').listen(server);
-
-
-app.get('/', function(req, res){
-  res.sendFile(__dirname + '/index.html');
-});
-app.use(express.static('public'));
-
-
 
 var users = {};
 var usersCount = 0;
@@ -62,7 +54,5 @@ websocket.sockets.on('connection', function (socket) {
 				system: true
 			});
 		}
-
 	});
-
 });
