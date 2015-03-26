@@ -8,6 +8,8 @@
 	var infoElement = document.getElementById('info');
 
 	var socket = io();
+	//socket.io.reconnection(false);
+
 	socket.on('serverMessage', function(data) {
 		addMessage(data.msg, data.system);
 	});
@@ -27,6 +29,12 @@
 	socket.on('userLeft', function(data) {
 		console.log("user left");
 		usersInfoUpdate(data)
+	});
+
+	//update server info about reconnected users
+	socket.on('reconnecting', function() {
+		console.log('reconnect');
+		socket.emit('login', username);
 	});
 
 	input.onkeydown = function(e) {
