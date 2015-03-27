@@ -31,6 +31,11 @@
 		usersInfoUpdate(data)
 	});
 
+	socket.on('disconnect', function() {
+		console.log('disconnect');
+		addMessage("You've been disconnected", true);
+	});
+
 	//update server info about reconnected users
 	socket.on('reconnecting', function() {
 		console.log('reconnect');
