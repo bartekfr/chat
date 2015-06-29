@@ -1,22 +1,31 @@
 
 (function() {
 	"use strict";
-	
+
 	var dialog = document.getElementById('dialog');
-	var lastMessageElement = null;
+	var previousDialog = null;
 	var input = document.getElementById('input');
 	var infoElement = document.getElementById('info');
+	var systemMessagesBox = document.getElementById('system');
+	var userBox = document.getElementById('user');
 
 	var socket = io();
 	//socket.io.reconnection(false);
 
 	socket.on('serverMessage', function(data) {
-		addMessage(data.msg, data.system);
+		addMessage(data.msg);
+	});
+
+	socket.on('dialogUpdate', function(data) {
+		addDialog(data);
 	});
 
 	//set username
 	var username = prompt('What username would you like to use?');
-	socket.emit('login', username);
+	userBox.innerHTML = username;
+	socket.emit('login', {
+		username: username
+	});
 
 	socket.on('logged', function(data) {
 		console.log("user logged in");
@@ -39,7 +48,10 @@
 	//update server info about reconnected users
 	socket.on('reconnecting', function() {
 		console.log('reconnect');
-		socket.emit('login', username);
+		socket.emit('login', {
+			username: username,
+			reconnect: true
+		});
 	});
 
 	input.onkeydown = function(e) {
@@ -52,15 +64,27 @@
 		}
 	};
 
-	function addMessage(message, system) {
+	function addMessage(message) {
+		systemMessagesBox.innerHTML =  message;
+	}
+
+	function addDialog(data) {
+		var message = data.msg;
+		var current = data.current;
+		var archive = data.history;
 		var newMessageElement = document.createElement('div');
-		var newMessageText = document.createTextNode(message);
-		if(system) {
-			newMessageElement.classList.add("strong");
+		if (current) {
+			newMessageElement.classList.add("current");
 		}
+		var newMessageText = document.createTextNode(message);
 		newMessageElement.appendChild(newMessageText);
-		dialog.insertBefore(newMessageElement, lastMessageElement);
-		lastMessageElement = newMessageElement;
+		if (archive) {
+			dialog.insertBefore(newMessageElement, previousDialog);
+		} else {
+			dialog.appendChild(newMessageElement);
+			dialog.scrollTop = dialog.scrollHeight;
+		}
+		previousDialog = newMessageElement;
 	}
 
 	function usersInfoUpdate(data) {

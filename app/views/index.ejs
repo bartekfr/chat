@@ -8,28 +8,37 @@
 	<title><%= title %></title>
 	<style type="text/css">
 		.box {
-			padding: 10px;
+			padding: 10px 0;
 		}
 
 		#dialog {
 			margin-top: 15px;
+			margin-bottom: 10px;
+			padding: 10px;
 			border: 1px solid #000;
+			max-height: 200px;
+			overflow: auto;
 		}
 
 		.strong {
 			font-weight: bold;
+		}
+
+		.current {
+			margin-left: 100px;
 		}
 	</style>
 </head>
 <body>
 	<section>
 		<h1>Chat</h1>
+		<div class="box" id="info"></div>
+		<div class="box" id="dialog"></div>
 		<form>
-			Type your message:
+			<span class="strong" id="user"></span> type your message:
 			<input type="text" id="input" placeholder="Type your message">
 		</form>
-		<div class="box" id="dialog"></div>	
-		<div class="box" id="info"></div>
+		<div class="box strong" id="system"></div>
 	</section>
 
 	<script src="/socket.io/socket.io.js"></script>
